@@ -7,6 +7,7 @@
 #include <fstream>
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <dirent.h>
@@ -130,8 +131,9 @@ int main(int argc , char *argv[])
     char prjDir[100];
     char toolsDir[100];
 
-    cout << "The project dir is :" << endl; 
-    if(getDir(prjDir,sizeof(prjDir),file_prj_dir)!=0)
+    
+    cout << "The tools dir is :" << endl; 
+    if(getDir(toolsDir,sizeof(toolsDir),file_tools_dir)!=0)
     {
         system("clear");
         cout << prjDir << " The project dir cannot open!" << endl;
