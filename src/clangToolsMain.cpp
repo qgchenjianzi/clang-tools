@@ -42,6 +42,7 @@ int isCodeFile(string fileName)
     }
     return 0;
 }
+
 /**
  *  判断是否为文件夹
  *
@@ -123,6 +124,17 @@ int traversePrj(const char *prjDir,const char *toolsDir)
     closedir(dPrj);
     return 0;
 }
+void initVecDir(vector<string> &vec,string fileName)
+{
+    ifstream fin(fileName);
+    string path;
+    while(getline(fin,path))
+    {
+        vec.push_back(path);
+    }
+
+    cout << "vector size " << vec.size() << endl;
+}
 void readFileByLine(string fileName, char * dir,int size) 
 {
     fstream outFile;
@@ -166,14 +178,28 @@ int getDir(char *dir,int size,string fileName)
     }
     return isFolderAccess(dir);
 }
+/**
+ * 多目录配置遍历 
+ *
+ */
+void traverseAllPath(vector<string> &vec,string dir_tool)
+{
+    vector<string>::iterator iter;
+    for(iter = vec.begin(); iter!=vec.end();++iter)
+    {
+        string prjDir = *iter;
+        traversePrj(prjDir.c_str(),dir_tool.c_str());
+    }
+}
 
 int main(int argc , char *argv[])
 {
-    char prjDir[2048];
     char toolsDir[2048];
 
+    vector<string> prjVector(20);
     t_start = time(NULL);
-    readFileByLine(file_prj_dir,prjDir,sizeof(prjDir)); 
+    //readFileByLine(file_prj_dir,prjDir,sizeof(prjDir)); 
+    initVecDir(prjVector,file_prj_dir);
     readFileByLine(file_tools_dir,toolsDir,sizeof(toolsDir)); 
 
     if(getDir(toolsDir,sizeof(toolsDir),file_tools_dir)!=0)
@@ -183,26 +209,18 @@ int main(int argc , char *argv[])
         cout << "Please input the rigit clang tools dir!" << endl;
         return 0;
     }
-    
-       string strPrjDir(prjDir);
-    /*   size_t iPos = strPrjDir.rfind('/');
-       string prjName = strPrjDir.substr(iPos+1,strPrjDir.length()-1);
 
-       if(strPrjDir.back() == '/')
-       dir_main_src = strPrjDir + prjName;
-       else
-       dir_main_src = strPrjDir + "/" + prjName;
-    */
+    // 对tool path进行处理 
     string strToolDir(toolsDir);
     if(strToolDir.back() == '/')
         dir_tool = strToolDir + dir_tool;
     else 
         dir_tool = strToolDir + "/" + dir_tool;
+    ////////////////////////////////////////// 
 
-    cout << "prjDir = " << prjDir << endl;
     cout << "toolsDir = " << dir_tool << endl;
-    //traversePrj(strPrjDir.c_str(),dir_tool.c_str());
-    traversePrj(prjDir,dir_tool.c_str());
+    traverseAllPath(prjVector,dir_tool);
+
     t_end = time(NULL);
     cout << "======================================================" << endl;
     cout << "Scan time is " << difftime(t_end,t_start) << "s" << endl;
