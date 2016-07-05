@@ -11,7 +11,8 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <dirent.h>
-
+#include <time.h>
+#include <vector>
 
 using namespace std;
 
@@ -25,12 +26,14 @@ string dir_main_src ;
 string dir_tool = "build/";
 string tool_name = "rewritersample";
 
+time_t t_start,t_end;
 
 // 判断文件后缀
 int isCodeFile(string fileName)
 {
     size_t iPos = fileName.find_last_of(".");
-    if(iPos <= 0)
+
+    if(iPos == string::npos || iPos >= fileName.length())
         return 0;
     string fileType = fileName.substr(iPos,fileName.length()-1);
     if(strcmp(fileType.c_str(),file_format_m.c_str())==0 || strcmp(fileType.c_str(),file_format_mm.c_str())==0)
@@ -39,6 +42,24 @@ int isCodeFile(string fileName)
     }
     return 0;
 }
+/**
+ *  判断是否为文件夹
+ *
+ */
+int is_dir(char *path)
+{
+    struct stat st;
+    stat(path,&st);
+    if(S_ISDIR(st.st_mode))
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
 //遍历项目文件夹
 int traversePrj(const char *prjDir,const char *toolsDir)
 {
@@ -52,45 +73,52 @@ int traversePrj(const char *prjDir,const char *toolsDir)
     DIR *dPrj,*dTools;
     struct dirent *file;
     struct stat sb;
-    //if(access(prjDir,F_OK)!=0)
-    cout << "prjDir open" << endl;
     if((dPrj=opendir(prjDir))==NULL)
     {
         cout << "error cannot open dir: "<< prjDir << endl;
         return -1;
     }
 
-    cout << "toolsDir open" << endl;
-    //if(access(toolsDir,F_OK)!=0)
     if((dTools = opendir(toolsDir))==NULL)
     {
         cout << "error cannot open dir: "<<toolsDir << endl;
         return -1;
     }
 
-    cout << "traversePrj" << endl;
     while((file = readdir(dPrj))!=NULL)
     {
         if(strcmp(file->d_name,".")==0 || strcmp(file->d_name,"..")==0 )
             continue;
-        //else if (stat(file->d_name,&sb)==0 && S_ISREG(sb.st_mode) && isCodeFile(file->d_name)==1 ) 
-        if(stat(file->d_name,&sb)>=0 && S_ISDIR(sb.st_mode)) 
+        char path[2048] = {0} ;
+        strcat(path,prjDir);
+        strcat(path,"/");
+        strcat(path,file->d_name);
+        
+        cout << "======== Scan file ==========" << endl;
+        cout << path << endl;
+        if(is_dir(path))
         {
-            cout << "scan folder name: " << file->d_name << endl;
-            traversePrj(file->d_name,toolsDir);
+            traversePrj(path,toolsDir);
         }
-        else if(isCodeFile(file->d_name))
+        else if(isCodeFile(path))
         {
             string strToolsDir = toolsDir + tool_name;
             string handleFile = strPrjDir+"/"+file->d_name;
             string callTools = strToolsDir + " " + handleFile;
 
-            cout << "the shell is " << endl;
+            cout << "The shell is ===========>" << endl;
             cout << callTools << endl;
+            cout << "======================================" << endl;
 
             cout << "\nfile name: " << file->d_name << endl;
             system(callTools.c_str());  
         }
+        else
+        {
+            cout << "It is not a dir or OCfile" << endl;
+            continue;
+        }
+        cout << "=============================" << endl;
     }
     closedir(dPrj);
     return 0;
@@ -107,7 +135,6 @@ void readFileByLine(string fileName, char * dir,int size)
     }
     outFile.close();
 }
-
 /**
  * 检查文件是否可以打开
  */
@@ -142,9 +169,10 @@ int getDir(char *dir,int size,string fileName)
 
 int main(int argc , char *argv[])
 {
-    char prjDir[1024];
-    char toolsDir[1024];
+    char prjDir[2048];
+    char toolsDir[2048];
 
+    t_start = time(NULL);
     readFileByLine(file_prj_dir,prjDir,sizeof(prjDir)); 
     readFileByLine(file_tools_dir,toolsDir,sizeof(toolsDir)); 
 
@@ -171,6 +199,13 @@ int main(int argc , char *argv[])
     else 
         dir_tool = strToolDir + "/" + dir_tool;
 
-    traversePrj(strPrjDir.c_str(),dir_tool.c_str());
-    //traversePrj(prjDir,dir_tool.c_str());
+    cout << "prjDir = " << prjDir << endl;
+    cout << "toolsDir = " << dir_tool << endl;
+    //traversePrj(strPrjDir.c_str(),dir_tool.c_str());
+    traversePrj(prjDir,dir_tool.c_str());
+    t_end = time(NULL);
+    cout << "======================================================" << endl;
+    cout << "Scan time is " << difftime(t_end,t_start) << "s" << endl;
+    cout << "======================================================" << endl;
+    return 0;
 }
