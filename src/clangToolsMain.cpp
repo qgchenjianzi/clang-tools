@@ -26,6 +26,8 @@ string dir_main_src ;
 string dir_tool = "build/";
 string tool_name = "rewritersample";
 
+string nodeFile = "./node.txt";
+
 time_t t_start,t_end;
 
 // 判断文件后缀
@@ -105,7 +107,7 @@ int traversePrj(const char *prjDir,const char *toolsDir)
         {
             string strToolsDir = toolsDir + tool_name;
             string handleFile = strPrjDir+"/"+file->d_name;
-            string callTools = strToolsDir + " " + handleFile;
+            string callTools = strToolsDir + " " + handleFile+" " + nodeFile;
 
             cout << "The shell is ===========>" << endl;
             cout << callTools << endl;
@@ -194,8 +196,16 @@ void traverseAllPath(vector<string> &vec,string dir_tool)
     }
 }
 
+void init()
+{
+    ofstream ofile;
+    ofile.open(nodeFile,ios::out|ios::trunc);
+    ofile.close();
+}
+
 int main(int argc , char *argv[])
 {
+    init();
     char toolsDir[2048];
 
     vector<string> prjVector(20);

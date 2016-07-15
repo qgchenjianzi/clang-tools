@@ -1,0 +1,13 @@
+16422031911592677640 /Users/currychen/Documents/git_prj/LKNSLog/LKNSLog/AppDelegate.m -[AppDelegate redirectNSLogToDocumentFolder] void 19 27
+12287679959707120973 /Users/currychen/Documents/git_prj/LKNSLog/LKNSLog/AppDelegate.m -[AppDelegate A] void 28 30
+6081229630768337923 /Users/currychen/Documents/git_prj/LKNSLog/LKNSLog/AppDelegate.m -[AppDelegate B] void 31 33
+10783216304781137012 /Users/currychen/Documents/git_prj/LKNSLog/LKNSLog/AppDelegate.m -[AppDelegate C] void 34 36
+5047111548009484880 /Users/currychen/Documents/git_prj/LKNSLog/LKNSLog/AppDelegate.m -[AppDelegate D] void 37 39
+8426073536552603392 /Users/currychen/Documents/git_prj/LKNSLog/LKNSLog/AppDelegate.m -[AppDelegate application:didFinishLaunchingWithOptions:]  id id 41 46
+14521178941893304218 /Users/currychen/Documents/git_prj/LKNSLog/LKNSLog/AppDelegate.m -[AppDelegate applicationWillResignActive:]  id 48 51
+8625014943164745597 /Users/currychen/Documents/git_prj/LKNSLog/LKNSLog/AppDelegate.m -[AppDelegate applicationDidEnterBackground:]  id 53 56
+5173377104814996999 /Users/currychen/Documents/git_prj/LKNSLog/LKNSLog/AppDelegate.m -[AppDelegate applicationWillEnterForeground:]  id 58 60
+9109654586342583271 /Users/currychen/Documents/git_prj/LKNSLog/LKNSLog/AppDelegate.m -[AppDelegate applicationDidBecomeActive:]  id 62 64
+15091941497916472823 /Users/currychen/Documents/git_prj/LKNSLog/LKNSLog/AppDelegate.m -[AppDelegate applicationWillTerminate:]  id 66 69
+9933079647894439234 /Users/currychen/Documents/git_prj/LKNSLog/LKNSLog/ViewController.m -[ViewController viewDidLoad:]  int 26 32
+448410409744919431 /Users/currychen/Documents/git_prj/LKNSLog/LKNSLog/ViewController.m -[ViewController didReceiveMemoryWarning] void 34 37
