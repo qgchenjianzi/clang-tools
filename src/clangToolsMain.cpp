@@ -188,6 +188,8 @@ void traverseAllPath(vector<string> &vec,string dir_tool)
     for(iter = vec.begin(); iter!=vec.end();++iter)
     {
         string prjDir = *iter;
+        if(prjDir.back() == '/')
+            prjDir.erase(prjDir.length()-1,1);
         traversePrj(prjDir.c_str(),dir_tool.c_str());
     }
 }
