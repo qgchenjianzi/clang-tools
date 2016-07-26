@@ -21,6 +21,7 @@ string file_format_mm = ".mm";
 
 string file_prj_dir = ".prjDir";
 string file_tools_dir = ".toolsDir";
+string file_ignore_dir = ".ignore";
 
 string dir_main_src ;
 string dir_tool = "build/";
@@ -29,6 +30,9 @@ string tool_name = "rewritersample";
 string nodeFile = "./node.txt";
 
 time_t t_start,t_end;
+
+int ignoreSize = 0;
+vector<string> ignoreVec;
 
 // 判断文件后缀
 int isCodeFile(string fileName)
@@ -63,6 +67,29 @@ int is_dir(char *path)
     }
 }
 
+bool isIgnoreFile(string strPrjDir,vector<string> &igVec)
+{
+    if(igVec.size() == ignoreSize)
+    {
+        return false;
+    }
+    else if(strPrjDir.empty())
+        return true;
+    for(int i = 0 ; i < igVec.size() ; i++)
+    {
+        //string prjDir = *iter;
+        string prjDir = igVec[i];
+        if(strPrjDir.compare(prjDir) == 0)
+        {
+            ignoreSize++;
+            cout << "Ignore file :" << prjDir << endl;
+            return true;
+        }
+    }
+    return false;
+
+}
+
 //遍历项目文件夹
 int traversePrj(const char *prjDir,const char *toolsDir)
 {
@@ -78,28 +105,32 @@ int traversePrj(const char *prjDir,const char *toolsDir)
     struct stat sb;
     if((dPrj=opendir(prjDir))==NULL)
     {
-        cout << "error cannot open dir: "<< prjDir << endl;
+        cout << "The dir should not be scanned: "<< prjDir << endl;
         return -1;
     }
 
     if((dTools = opendir(toolsDir))==NULL)
     {
-        cout << "error cannot open dir: "<<toolsDir << endl;
+        cout << "error cannot open dir:"<<toolsDir << endl;
         return -1;
     }
 
     while((file = readdir(dPrj))!=NULL)
     {
-        if(strcmp(file->d_name,".")==0 || strcmp(file->d_name,"..")==0 )
+        if(strcmp(file->d_name,".")==0 || strcmp(file->d_name,"..")==0)
             continue;
         char path[2048] = {0} ;
         strcat(path,prjDir);
         strcat(path,"/");
         strcat(path,file->d_name);
-        
+
         cout << "======== Scan file ==========" << endl;
         cout << path << endl;
-        if(is_dir(path))
+        if(isIgnoreFile(strPrjDir,ignoreVec))
+        {
+            break;
+        }
+        else if(is_dir(path))
         {
             traversePrj(path,toolsDir);
         }
@@ -126,17 +157,19 @@ int traversePrj(const char *prjDir,const char *toolsDir)
     closedir(dPrj);
     return 0;
 }
+
 void initVecDir(vector<string> &vec,string fileName)
 {
     ifstream fin(fileName);
     string path;
     while(getline(fin,path))
     {
+        if(path.back() == '/')
+            path.erase(path.length()-1,1);
         vec.push_back(path);
     }
-
-    cout << "vector size " << vec.size() << endl;
 }
+
 void readFileByLine(string fileName, char * dir,int size) 
 {
     fstream outFile;
@@ -190,9 +223,13 @@ void traverseAllPath(vector<string> &vec,string dir_tool)
     for(iter = vec.begin(); iter!=vec.end();++iter)
     {
         string prjDir = *iter;
-        if(prjDir.back() == '/')
-            prjDir.erase(prjDir.length()-1,1);
-        traversePrj(prjDir.c_str(),dir_tool.c_str());
+        cout << "prjDir " << prjDir << endl;
+        if(isIgnoreFile(prjDir,ignoreVec))
+            continue;
+        if(!prjDir.empty())
+        {
+            traversePrj(prjDir.c_str(),dir_tool.c_str());
+        }
     }
 }
 
@@ -208,10 +245,12 @@ int main(int argc , char *argv[])
     init();
     char toolsDir[2048];
 
-    vector<string> prjVector(20);
+    vector<string> prjVector;
     t_start = time(NULL);
     //readFileByLine(file_prj_dir,prjDir,sizeof(prjDir)); 
     initVecDir(prjVector,file_prj_dir);
+    initVecDir(ignoreVec,file_ignore_dir);
+
     readFileByLine(file_tools_dir,toolsDir,sizeof(toolsDir)); 
 
     if(getDir(toolsDir,sizeof(toolsDir),file_tools_dir)!=0)

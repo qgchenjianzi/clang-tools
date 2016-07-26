@@ -58,9 +58,8 @@ def read_git_lines(content):
 
         # record changed lines
         filename = filename.strip()
-        print "filename:",index, filename
-       # if filename.endswith('.java'):
-        changelinemap[filename] = changed_lines
+        if filename.endswith('.cpp') or filename.endswith('.cxx') or filename.endswith('.m') or filename.endswith('.mm') or filename.endswith('.c'):
+            changelinemap[filename] = changed_lines
     return changelinemap
 
 if "__main__" == __name__:
@@ -79,4 +78,4 @@ if "__main__" == __name__:
             lines = []
         json_fp = open(sys.argv[2], "w")
         print result
-        json.dump(lines, json_fp)
+        json.dump(result, json_fp)
