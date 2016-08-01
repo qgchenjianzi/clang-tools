@@ -47,9 +47,9 @@ def list_all_dict(dict_a):
                 print str_func_call
                 for __func_name in str_func_list:
                     print __func_name
-                    INSERT_FUNC_CALL_LIST = """INSERT INTO FUNC_CALL VALUES(%s,%s)"""
-                    param = (__func_name,str_func_call)
-                    cursor.execute(INSERT_FUNC_CALL_LIST,param)
+                    #INSERT_FUNC_CALL_LIST = """INSERT INTO FUNC_CALL VALUES(%s,%s)"""
+                    #param = (__func_name,str_func_call)
+                    #cursor.execute(INSERT_FUNC_CALL_LIST,param)
                 str_func_call = ""
                 str_func_list = []
             else:
@@ -67,19 +67,20 @@ def initial_dict(dict_a,level,value):
             temp_value = dict_a[temp_key]
             initial_dict(temp_value,level,value)
 
-# initial the func_call dict
 level_num = 0
-cursor.execute(SELECT_FUNC)
-results = cursor.fetchall()
-for func in results:
-    if func:
-        func_name = func[0]
-        status = func[1]
-        thread_id = func[2]
-        if cmp(status,"in")==0:
-            level_num = level_num+1
-            initial_dict(func_call_dict,level_num,func_name)
-        elif cmp(status,"return")==0 and level_num > 0 :
-            level_num = level_num-1
-
-list_all_dict(func_call_dict)
+if __name__ == "__main__":
+    import sys 
+    if len(sys.argv) == 2:
+        # initial the func_call dict
+        for line in open(sys.argv[1],"r").readlines():
+            pass
+            if func:
+                func_name = func[1]
+                status = func[3]
+                thread_id = func[2]
+                if cmp(status,"in")==0:
+                    level_num = level_num+1
+                    initial_dict(func_call_dict,level_num,func_name)
+                elif cmp(status,"return")==0 and level_num > 0 :
+                    level_num = level_num-1
+    list_all_dict(func_call_dict)
