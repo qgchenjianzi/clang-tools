@@ -53,19 +53,18 @@ def list_all_dict(dict_a):
                 str_func_call = ""
                 str_func_list = []
             else:
-                str_func_call = "," + temp_key + str_func_call
+                str_func_call = "->" + temp_key + str_func_call
 
-
-def initial_dict(dict_a,level,value):
-    level = level - 1 
-    if level == 0 :
-        dict_a[value] = dict()
+def initial_dict(dict_a,level,key_func_name):
+    temp_level = level - 1 
+    if temp_level == 0 :
+        dict_a[key_func_name] = dict()
     else:
         if len(dict_a):
             # everything that insert is appended at the end
             temp_key = dict_a.keys()[len(dict_a)-1] 
-            temp_value = dict_a[temp_key]
-            initial_dict(temp_value,level,value)
+            temp_dict = dict_a[temp_key]
+            initial_dict(temp_dict,level,key_func_name)
 
 level_num = 0
 if __name__ == "__main__":
@@ -73,11 +72,11 @@ if __name__ == "__main__":
     if len(sys.argv) == 2:
         # initial the func_call dict
         for line in open(sys.argv[1],"r").readlines():
-            pass
-            if func:
-                func_name = func[1]
-                status = func[3]
-                thread_id = func[2]
+            func_mes = line.split("!#!")
+            if func_mes:
+                func_name = func_mes[1]
+                status = func_mes[3].strip().lstrip()
+                thread_id = func_mes[2]
                 if cmp(status,"in")==0:
                     level_num = level_num+1
                     initial_dict(func_call_dict,level_num,func_name)
